@@ -1,21 +1,55 @@
----
-sidebar_position: 1
-slug: /
-title: Overview
-description: Learn to use ngrok with our guides, examples, integration guides, and API references
----
+<?php
+//error_reporting(0);
 
-# ngrok Documentation
--------------------
+       $isimad = $_GET['ad'];
+       $soyad = $_GET['soyad'];
 
-Welcome to the ngrok documentation. ngrok is the fastest way to host your service on the internet and these docs are the fastest way to answer any questions you have about using ngrok.
+        if (empty($isimad)) {
+            echo json_encode(["success" => "false", "message" => " Ad Oyunda Hata vardir lutfen bekleyiniz", "Api_Owner" => "Krex & Swoxy"], JSON_PRETTY_PRINT);
+            die();
+        }
 
-The documentation is organized into categories designed for different purposes. If you're just learning about ngrok, our [Getting Started Guide](/getting-started) is probably the best place to begin.
+        if (empty($soyad)) {
+            echo json_encode(["success" => "false", "message" => " Soyad Oyunda Hata vardir lutfen bekleyiniz", "Api_Owner" => "Krex & Swoxy"], JSON_PRETTY_PRINT);
+            die();
+        }
 
-Are you coming from a previous version of ngrok? Check out our [ngrok v2 to v3 upgrade guide](/guides/upgrade-v2-v3).
+        $url = "xd/adsoyad.php?ad=$isimad&soyad=$soyad";
 
-If you're trying to accomplish something specific, check out our [guides](/guides) for things like [securing your tunnel](/guides/securing-your-tunnels) and [setting up custom domains](/guides/how-to-set-up-a-custom-domain).
+$con = mysqli_connect("localhost", "root", "", "101m");
+$response = array();
+if ($con) {
+    $sql = "SELECT * FROM `101m` WHERE ADI='$isimad' AND SOYADI='$soyad'";
+    $result = mysqli_query($con, $sql);
+    if ($result) {
 
-If you're trying to use ngrok with a specific technology, check out our [using ngrok with](/using-ngrok-with) section for help with using ngrok with [Wordpress](/using-ngrok-with#wordpress), [Docker](/using-ngrok-with#docker), or [SSH](/using-ngrok-with#ssh).
+        header("Content-type: application/json; charset=utf-8");
+        $idk=0;
+        while($row = mysqli_fetch_assoc($result)) {
+            $response[$idk]['jevo_TC'] = $row['TC'];
+            $response[$idk]['jevo_ADI'] = $row['ADI'];
+            $response[$idk]['jevo_SOYADI'] = $row['SOYADI'];
+            $response[$idk]['jevo_DOGUMTARIHI'] = $row['DOGUMTARIHI'];
+            $response[$idk]['jevo_NUFUSIL'] = $row['NUFUSIL'];
+            $response[$idk]['jevo_NUFUSILCE'] = $row['NUFUSILCE'];
+            $response[$idk]['jevo_ANNEADI'] = $row['ANNEADI'];
+            $response[$idk]['jevo_ANNETC'] = $row['ANNETC'];
+            $response[$idk]['jevo_BABAADI'] = $row['BABAADI'];
+            $response[$idk]['jevo_BABATC'] = $row['BABATC'];
+            $response[$idk]['jevo_UYRUK'] = $row['UYRUK'];
+            $idk++;
+        }
 
-If you're an expert at ngrok, but just need some quick reference, check out our reference documentation for the [ngrok API](/api) or [ngrok agent](/ngrok-agent).
+
+        
+        echo json_encode($response, JSON_UNESCAPED_UNICODE); //, JSON_PRETTY_PRINT
+
+        $api = curl_init($url);
+        curl_setopt($api, CURLOPT_URL, $url);
+        curl_setopt($api, CURLOPT_RETURNTRANSFER, true);
+    }
+}
+else {
+    echo "Hata var :d";
+}
+?>
